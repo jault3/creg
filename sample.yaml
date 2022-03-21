@@ -1,0 +1,11 @@
+apiVersion: stable.example.com/v1
+kind: CronTab
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  cronSpec: '* * * * *'
+  image: a string
+  replicas: 1
+  suspend: true
+  labels: []
