@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Button, Flex, Text, Textarea, useColorModeValue, VStack } from '@chakra-ui/react';
+import { Button, Flex, Text, VStack } from '@chakra-ui/react';
 import { dump, load } from 'js-yaml';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats'
+import MonacoEditor from 'react-monaco-editor';
+import { monaco } from 'react-monaco-editor';
 
 const getObjectFromSchema = (schema) => {
   let ret = null;
@@ -70,9 +72,8 @@ function RenderedResource({crd}) {
     return ajv.compile(schema)
   }, [crd])
 
-  let handleInputChange = (e) => {
-    let inputValue = e.target.value
-    setValue(inputValue)
+  let handleInputChange = (newValue) => {
+    setValue(newValue)
   }
 
   const validateDoc = (crd, doc) => {
@@ -94,13 +95,23 @@ function RenderedResource({crd}) {
     }
   }
 
+  monaco.languages.yaml.yamlDefaults.setDiagnosticsOptions({
+    validate: true,
+    schemas: [getSchema(crd)],
+  });
+
   return (
     <VStack flex='1' align='stretch'>
       <Flex align='center'>
         <Button onClick={() => validateDoc(crd, value)}>Validate</Button>
         <Text ml='16px' color={msg.color}>{msg.value}</Text>
       </Flex>
-      <Textarea bg={useColorModeValue('gray.100', 'gray.700')} flex='1' variant='outline' resize='none' value={value} onChange={handleInputChange} />
+      <MonacoEditor
+        language="yaml"
+        theme="vs-dark"
+        value={value}
+        onChange={handleInputChange}
+      />
     </VStack>
   );
 }
