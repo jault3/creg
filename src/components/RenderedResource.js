@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Flex, Text, Textarea, VStack } from '@chakra-ui/react';
+import { Button, Flex, Text, Textarea, useColorModeValue, VStack } from '@chakra-ui/react';
 import { dump, load } from 'js-yaml';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats'
@@ -85,7 +85,7 @@ function RenderedResource({crd}) {
     console.log(valid)
     console.log(validate.errors)
     if (!valid) {
-      setMsg({value: 'Errors found', color: 'red'})
+      setMsg({value: 'Errors found. Check the browser console for details.', color: 'red'})
       validate.errors.forEach((e) => {
         console.log(e)
       })
@@ -100,7 +100,7 @@ function RenderedResource({crd}) {
         <Button onClick={() => validateDoc(crd, value)}>Validate</Button>
         <Text ml='16px' color={msg.color}>{msg.value}</Text>
       </Flex>
-      <Textarea flex='1' variant='outline' resize='none' value={value} onChange={handleInputChange} />
+      <Textarea bg={useColorModeValue('gray.100', 'gray.700')} flex='1' variant='outline' resize='none' value={value} onChange={handleInputChange} />
     </VStack>
   );
 }

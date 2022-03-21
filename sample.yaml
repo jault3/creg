@@ -1,5 +1,5 @@
-apiVersion: stable.example.com/v1
-kind: CronTab
+apiVersion: joshault.dev/v1
+kind: CREG
 metadata:
   name: my-app
   namespace: default
@@ -8,4 +8,9 @@ spec:
   image: a string
   replicas: 1
   suspend: true
-  labels: []
+  readinessProbe:
+    path: /readyz
+    protocol: https
+  labels:
+  - name: key
+    value: val

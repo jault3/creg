@@ -5,9 +5,9 @@ function CRD() {
   return load(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: crontabs.stable.example.com
+  name: creg.joshault.dev
 spec:
-  group: stable.example.com
+  group: joshault.dev
   versions:
     - name: v1
       served: true
@@ -38,6 +38,19 @@ spec:
                 suspend:
                   description: If true, the cronjob will not be run
                   type: boolean
+                readinessProbe:
+                  description: Details on configuring the readiness probe for the cronjob pod spec
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      pattern: '^/.*$'
+                    protocol:
+                      description: The protocol that should be used when sending a request to the specified endpoint
+                      type: string
+                      enum:
+                      - http
+                      - https
                 labels:
                   description: Extra labels to define on the cronjob pod spec.
                   type: array
@@ -55,11 +68,11 @@ spec:
               - image
   scope: Namespaced
   names:
-    plural: crontabs
-    singular: crontab
-    kind: CronTab
+    plural: cregs
+    singular: creg
+    kind: CREG
     shortNames:
-    - ct
+    - cg
 `)
 }
 
