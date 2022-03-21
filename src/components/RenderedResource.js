@@ -1,10 +1,22 @@
-import { useMemo, useState } from 'react';
-import { Button, Flex, Text, VStack } from '@chakra-ui/react';
-import { dump, load } from 'js-yaml';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats'
+import { useEffect, useState } from 'react';
+import { VStack } from '@chakra-ui/react';
+import { dump } from 'js-yaml';
 import MonacoEditor from 'react-monaco-editor';
-import { monaco } from 'react-monaco-editor';
+import { setDiagnosticsOptions } from 'monaco-yaml';
+// https://github.com/remcohaszing/monaco-yaml/issues/92
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker.js';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import YamlWorker from 'worker-loader!monaco-yaml/yaml.worker.js';
+
+window.MonacoEnvironment = {
+  getWorker(moduleId, label) {
+    if (label === 'yaml') {
+      return new YamlWorker();
+    }
+    return new EditorWorker();
+  },
+};
 
 const getObjectFromSchema = (schema) => {
   let ret = null;
@@ -51,61 +63,39 @@ const getResource = (crd) => {
   Object.keys(schema.properties).forEach((a) => {
     res[a] = getObjectFromSchema(schema.properties[a])
   })
+  res.apiVersion = `${crd.spec.group}/${version.name}`
+  res.kind = crd.spec.names.kind
+  res.metadata = {
+    name: 'my-app',
+    namespace: 'default',
+  }
   return dump(res)
 }
 
 const getSchema = (crd) => {
   const version = crd.spec.versions.filter((m) => m.served)[0]
-  return version.schema.openAPIV3Schema
+  const schema = version.schema.openAPIV3Schema
+  schema.properties.apiVersion = {type: 'string', enum: [`${crd.spec.group}/${version.name}`]}
+  schema.properties.kind = {type: 'string', enum: [crd.spec.names.kind]}
+  schema.properties.metadata = {type: 'object'}
+  return schema
 }
 
 function RenderedResource({crd}) {
   let [value, setValue] = useState(getResource(crd))
-  let [msg, setMsg] = useState({value: '', color: 'green'})
-
-  const validate = useMemo(() => {
-    const ajv = new Ajv({allErrors: true, verbose: true})
-    addFormats(ajv)
-    const schema = getSchema(crd)
-    schema.additionalProperties = false
-    // console.log(schema)
-    return ajv.compile(schema)
-  }, [crd])
 
   let handleInputChange = (newValue) => {
     setValue(newValue)
   }
 
-  const validateDoc = (crd, doc) => {
-    const yamldoc = load(doc)
-    delete yamldoc['apiVersion']
-    delete yamldoc['kind']
-    delete yamldoc['metadata']
-    // console.log(yamldoc)
-    const valid = validate(yamldoc)
-    console.log(valid)
-    console.log(validate.errors)
-    if (!valid) {
-      setMsg({value: 'Errors found. Check the browser console for details.', color: 'red'})
-      validate.errors.forEach((e) => {
-        console.log(e)
-      })
-    } else {
-      setMsg({value: 'Custom resource is valid', color: 'green'})
-    }
-  }
-
-  monaco.languages.yaml.yamlDefaults.setDiagnosticsOptions({
-    validate: true,
-    schemas: [getSchema(crd)],
-  });
+  useEffect(() => {
+    setDiagnosticsOptions({
+      schemas: [{uri: 'http://creg/schema.json', fileMatch: ["*"], schema: getSchema(crd)}],
+    });
+  }, [crd])
 
   return (
     <VStack flex='1' align='stretch'>
-      <Flex align='center'>
-        <Button onClick={() => validateDoc(crd, value)}>Validate</Button>
-        <Text ml='16px' color={msg.color}>{msg.value}</Text>
-      </Flex>
       <MonacoEditor
         language="yaml"
         theme="vs-dark"
