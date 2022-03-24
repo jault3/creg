@@ -5,7 +5,7 @@ function NavBar() {
   const { toggleColorMode } = useColorMode()
   const ThemeToggleIcon = useColorModeValue(MoonIcon, SunIcon)
   return (
-    <Flex p='16px' align='center' bg={useColorModeValue('green.500', 'green.900')}>
+    <Flex p='12px' align='center' bg={useColorModeValue('green.500', 'green.900')}>
       <Text fontSize='xl'>CREG - Custom ResourcE Generator</Text>
       <Spacer />
       <IconButton onClick={toggleColorMode} icon={<ThemeToggleIcon />} variant='ghost' />

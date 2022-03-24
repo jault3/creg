@@ -1,25 +1,26 @@
-import { useEffect, useState } from 'react';
-import { VStack } from '@chakra-ui/react';
-import { dump } from 'js-yaml';
-import MonacoEditor from 'react-monaco-editor';
-import { setDiagnosticsOptions } from 'monaco-yaml';
-// https://github.com/remcohaszing/monaco-yaml/issues/92
+import { useEffect, useState } from 'react'
+import { VStack } from '@chakra-ui/react'
+import { dump } from 'js-yaml'
+import MonacoEditor, { monaco } from 'react-monaco-editor'
+import { setDiagnosticsOptions } from 'monaco-yaml'
+// see https://github.com/remcohaszing/monaco-yaml/issues/92
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker.js';
+import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker.js'
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import YamlWorker from 'worker-loader!monaco-yaml/yaml.worker.js';
+import YamlWorker from 'worker-loader!monaco-yaml/yaml.worker.js'
+import { getSchema } from '../CRD'
 
 window.MonacoEnvironment = {
   getWorker(moduleId, label) {
     if (label === 'yaml') {
-      return new YamlWorker();
+      return new YamlWorker()
     }
-    return new EditorWorker();
+    return new EditorWorker()
   },
-};
+}
 
 const getObjectFromSchema = (schema) => {
-  let ret = null;
+  let ret = null
   switch (schema.type) {
     case 'object':
       ret = {}
@@ -53,7 +54,7 @@ const getResource = (crd) => {
     apiVersion: `${crd.spec.group}/${version.name}`,
     kind: crd.spec.names.kind,
     metadata: {
-      name: 'my-app',
+      name: 'my-cr',
       namespace: 'default',
     },
   }
@@ -66,26 +67,31 @@ const getResource = (crd) => {
   res.apiVersion = `${crd.spec.group}/${version.name}`
   res.kind = crd.spec.names.kind
   res.metadata = {
-    name: 'my-app',
+    name: 'my-cr',
     namespace: 'default',
   }
   return dump(res)
 }
 
-const getSchema = (crd) => {
-  const version = crd.spec.versions.filter((m) => m.served)[0]
-  const schema = version.schema.openAPIV3Schema
-  schema.properties.apiVersion = {type: 'string', enum: [`${crd.spec.group}/${version.name}`]}
-  schema.properties.kind = {type: 'string', enum: [crd.spec.names.kind]}
-  schema.properties.metadata = {type: 'object'}
-  return schema
-}
-
-function RenderedResource({crd}) {
+function RenderedResource({ crd, setNumErrors }) {
   let [value, setValue] = useState(getResource(crd))
+
+  useEffect(() => {
+    setValue(getResource(crd))
+  }, [crd])
 
   let handleInputChange = (newValue) => {
     setValue(newValue)
+  }
+
+  const editorDidMount = (editor, monaco) => {
+    editor.focus()
+    editor.onDidChangeModelDecorations(onDidChangeModelDecorations)
+  }
+
+  const onDidChangeModelDecorations = () => {
+    const markers = monaco.editor.getModelMarkers({ owner: 'yaml' })
+    setNumErrors(markers.length)
   }
 
   useEffect(() => {
@@ -101,6 +107,7 @@ function RenderedResource({crd}) {
         theme="vs-dark"
         value={value}
         onChange={handleInputChange}
+        editorDidMount={editorDidMount}
       />
     </VStack>
   );

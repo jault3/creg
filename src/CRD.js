@@ -1,7 +1,33 @@
 import { load } from 'js-yaml';
 
-// TODO load from URL or clipboard instead of hardcoding
-function CRD() {
+function validateCRD(crd) {
+  try {
+    getSchema(crd)
+  } catch (e) {
+    return e
+  }
+  return null
+}
+
+function getSchema(crd) {
+  const version = crd.spec.versions.filter((m) => m.served)[0]
+  const schema = version.schema.openAPIV3Schema
+  if (!schema.properties.apiVersion) {
+    schema.properties.apiVersion = {type: 'string', enum: [`${crd.spec.group}/${version.name}`]}
+  }
+  if (!schema.properties.kind) {
+    schema.properties.kind = {type: 'string', enum: [crd.spec.names.kind]}
+  }
+  if (!schema.properties.metadata) {
+    schema.properties.metadata = {type: 'object', properties: {name: {type: 'string'}}}
+    if (crd.spec.scope === 'Namespaced') {
+      schema.properties.metadata.properties.namespace = {type: 'string'}
+    }
+  }
+  return schema
+}
+
+function getSampleCRD() {
   return load(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -76,4 +102,4 @@ spec:
 `)
 }
 
-export default CRD;
+export { getSchema, getSampleCRD, validateCRD }

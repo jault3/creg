@@ -9,11 +9,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-
-const getServedSchema = (crd) => {
-  const version = crd.spec.versions.filter((m) => m.served)[0]
-  return version.schema.openAPIV3Schema
-}
+import { getSchema } from '../CRD'
 
 const getPanel = (schema, name, path, isRequired) => {
   return <Box pl='16px' pb='16px' flex='1' textAlign='left' key={path+'.'+name}>
@@ -87,7 +83,7 @@ const getValueFromSchema = (schema, name, path, required) => {
 }
 
 function Definition({crd}) {
-  const schema = getServedSchema(crd)
+  const schema = getSchema(crd)
   return (
     <VStack flex='1' align='stretch'>
       <Accordion allowMultiple overflow='scroll'>
