@@ -7,13 +7,17 @@ import {
   Box,
   Code,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react'
 import { getSchema } from '../CRD'
 
 const getPanel = (schema, name, path, isRequired) => {
   return <Box pl='16px' pb='16px' flex='1' textAlign='left' key={path+'.'+name}>
-    <Text pr='5px'><strong>{name} {isRequired && '*'}</strong> <Code>{schema.type}</Code></Text>
+    <Text pr='5px'>
+      <Tooltip label={path+'.'+name}><strong>{name} {isRequired && '* '}</strong></Tooltip>
+      <Code>{schema.type}</Code>
+    </Text>
     <Text pr='5px'>{schema.description}</Text>
     {schema.enum && (
       <Text pr='5px' as='i'>Allowable values: {JSON.stringify(schema.enum)}</Text>
@@ -37,7 +41,10 @@ const getValueFromSchema = (schema, name, path, required) => {
           <h2>
             <AccordionButton>
               <Box flex='1' textAlign='left'>
-                <Text><strong>{name} {isRequired && '*'}</strong> <Code>{schema.type}</Code></Text>
+                <Text>
+                  <Tooltip label={path+'.'+name}><strong>{name} {isRequired && '* '}</strong></Tooltip>
+                  <Code>{schema.type}</Code>
+                </Text>
                 <Text>{schema.description}</Text>
               </Box>
               <AccordionIcon />
@@ -58,14 +65,17 @@ const getValueFromSchema = (schema, name, path, required) => {
         <h2>
           <AccordionButton>
             <Box flex='1' textAlign='left'>
-              <Text><strong>{name} {isRequired && '*'}</strong> <Code>{schema.type}</Code></Text>
+              <Text>
+                <Tooltip label={path+'.'+name}><strong>{name} {isRequired && '* '}</strong></Tooltip>
+                <Code>{schema.type}</Code>
+              </Text>
               <Text>{schema.description}</Text>
             </Box>
             <AccordionIcon />
           </AccordionButton>
         </h2>
         <AccordionPanel pb='16px' pr='0px'>
-          {getValueFromSchema(schema.items, 'items', path+'.items', [])}
+          {getValueFromSchema(schema.items, 'items', path+'.'+name, [])}
         </AccordionPanel>
       </AccordionItem>
       break
@@ -88,7 +98,7 @@ function Definition({crd}) {
     <VStack flex='1' align='stretch'>
       <Accordion allowMultiple overflow='scroll'>
         {Object.keys(schema.properties).map((k) => (
-          getValueFromSchema(schema.properties[k], k, 'root', schema.required || [])
+          getValueFromSchema(schema.properties[k], k, '', schema.required || [])
         ))}
       </Accordion>
     </VStack>
