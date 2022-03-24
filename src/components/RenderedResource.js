@@ -3,19 +3,14 @@ import { VStack } from '@chakra-ui/react'
 import { dump } from 'js-yaml'
 import MonacoEditor, { monaco } from 'react-monaco-editor'
 import { setDiagnosticsOptions } from 'monaco-yaml'
-// see https://github.com/remcohaszing/monaco-yaml/issues/92
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker.js'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import YamlWorker from 'worker-loader!monaco-yaml/yaml.worker.js'
 import { getSchema } from '../CRD'
 
 window.MonacoEnvironment = {
   getWorker(moduleId, label) {
     if (label === 'yaml') {
-      return new YamlWorker()
+      return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url))
     }
-    return new EditorWorker()
+    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url))
   },
 }
 
