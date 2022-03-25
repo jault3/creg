@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: creg
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: creg
+        image: ghcr.io/jault3/creg:latest
+        ports:
+        - containerPort: 8080
+      serviceAccountName: creg
