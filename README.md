@@ -1,6 +1,6 @@
 # CREG - Custom ResourcE Generator
 
-CREG is a website for generating and validating a Custom Resource (CR) from a Kubernetes Custom Resource Definition (CRD). You can use CREG to build your CR from scratch, or validate an already existing one to figure out exactly which line violates the CRD schema.
+CREG is a website for generating and validating a Custom Resource (CR) from a Kubernetes Custom Resource Definition (CRD). CREG can be used to build a CR from scratch, or validate an already existing one to figure out exactly which lines violate the CRD schema.
 
 ![demo image](docs/demo.png)
 
