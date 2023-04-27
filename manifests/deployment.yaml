@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: creg
-        image: ghcr.io/jault3/creg:latest
+        image: ghcr.io/jault3/creg:v0.0.1
         ports:
         - containerPort: 8080
       serviceAccountName: creg

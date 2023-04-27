@@ -17,7 +17,7 @@ If you want to deploy CREG on your own infrastructure, you can use any of the op
 A Docker image is made available on the GitHub registry.
 
 ```
-docker pull ghcr.io/jault3/creg:v1.0.0
+docker pull ghcr.io/jault3/creg:v0.0.1
 ```
 
 View all versions on the [packages page](https://github.com/jault3/creg/pkgs/container/creg)
@@ -27,7 +27,7 @@ View all versions on the [packages page](https://github.com/jault3/creg/pkgs/con
 Kubernetes manifests are provided in the [manifests/](manifests/) directory. You can deploy them with
 
 ```
-kubectl apply -k https://raw.githubusercontent.com/jault3/creg/v1.0.0/manifests/kustomization.yaml
+kubectl apply -k https://raw.githubusercontent.com/jault3/creg/v0.0.1/manifests/kustomization.yaml
 ```
 
 Or use them as a base in your own Kustomization
@@ -36,7 +36,7 @@ Or use them as a base in your own Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- https://raw.githubusercontent.com/jault3/creg/v1.0.0/manifests/kustomization.yaml
+- https://raw.githubusercontent.com/jault3/creg/v0.0.1/manifests/kustomization.yaml
 patches:
 - <your-patch-files>
 ```
