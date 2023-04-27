@@ -7,5 +7,10 @@ module.exports = {
         languages: ['yaml'],
       })
     ],
+    resolve: {
+      fallback: {
+          buffer: require.resolve('buffer/'),
+      },
+    },
   }
 }
