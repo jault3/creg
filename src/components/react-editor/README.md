@@ -1,0 +1,1 @@
+Files in this directory are pulled directly from https://github.com/react-monaco-editor/react-monaco-editor/tree/master. react-monaco-editor pins the monaco-editor to 0.36, which was not latest at the time of updating. So in order to use the latest monaco-editor, these files were copied and converted to plain javascript (instead of typescript).

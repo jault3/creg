@@ -16,7 +16,7 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react'
-import { load } from 'js-yaml'
+import { parse } from 'yaml'
 import { useState } from 'react'
 import { validateCRD } from '../CRD'
 
@@ -28,7 +28,7 @@ function CRDModal({ isOpen, onClose, setCRD }) {
 
   const validateCRDOrError = (text) => {
     try {
-      const doc = load(text)
+      const doc = parse(text)
       const error = validateCRD(doc)
       if (error) {
         setErr('Invalid CRD: ' + error.message)

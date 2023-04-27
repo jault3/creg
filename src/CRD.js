@@ -1,4 +1,4 @@
-import { load } from 'js-yaml';
+import { parse } from 'yaml';
 
 function validateCRD(crd) {
   try {
@@ -28,7 +28,7 @@ function getSchema(crd) {
 }
 
 function getSampleCRD() {
-  return load(`apiVersion: apiextensions.k8s.io/v1
+  return parse(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: creg.joshault.dev

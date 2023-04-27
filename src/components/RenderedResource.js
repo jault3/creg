@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react'
 import { VStack } from '@chakra-ui/react'
 import { dump } from 'js-yaml'
-import MonacoEditor, { monaco } from 'react-monaco-editor'
+import MonacoEditor, { monaco } from './react-editor'
 import { setDiagnosticsOptions } from 'monaco-yaml'
 import { getSchema } from '../CRD'
 
 window.MonacoEnvironment = {
   getWorker(moduleId, label) {
-    if (label === 'yaml') {
-      return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url))
+    switch (label) {
+      case 'editorWorkerService':
+        return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
+      case 'yaml':
+        return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url));
+      default:
+        throw new Error(`Unknown label ${label}`);
     }
-    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url))
   },
-}
+};
 
 const getObjectFromSchema = (schema) => {
   let ret = null
@@ -91,7 +95,16 @@ function RenderedResource({ crd, setNumErrors }) {
 
   useEffect(() => {
     setDiagnosticsOptions({
-      schemas: [{uri: 'http://creg/schema.json', fileMatch: ["*"], schema: getSchema(crd)}],
+      enableSchemaRequest: false,
+      hover: true,
+      completion: true,
+      validate: true,
+      format: true,
+      schemas: [{
+        uri: 'http://creg/schema.json',
+        fileMatch: ["*"],
+        schema: getSchema(crd),
+      }],
     });
   }, [crd])
 
