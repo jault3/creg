@@ -76,5 +76,5 @@ CREG makes use of the following libraries:
 * [React Monaco Editor](https://github.com/react-monaco-editor/react-monaco-editor) for providing [Monaco Editor](https://github.com/microsoft/monaco-editor) as a React component to edit the CR
 * [Monaco YAML](https://github.com/remcohaszing/monaco-yaml) to add schema validation for YAML files in Monaco
 * [monaco-editor-webpack-plugin](https://www.npmjs.com/package/monaco-editor-webpack-plugin) to make loading Monaco with webpack easier
-* [JS-YAML](https://github.com/nodeca/js-yaml) for loading CRD YAML files as objects
+* [yaml](https://github.com/eemeli/yaml) for loading CRD YAML files as objects
 * [Craco](https://github.com/gsoft-inc/craco) for being able to use monaco-editor-webpack-plugin without ejecting

@@ -1,0 +1,23 @@
+name: GitHub Pages
+on:
+  push:
+    branches:
+      - main
+env:
+  NODE_VERSION: '18'
+jobs:
+  gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm ci
+      - run: npm run build
+        env:
+          PUBLIC_URL: /creg/
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
